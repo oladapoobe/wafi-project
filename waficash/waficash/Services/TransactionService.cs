@@ -33,9 +33,9 @@ namespace waficash.Services
             using (StreamWriter sw = File.CreateText("transactionData.json"))
             {
                 sw.Write(JsonConvert.SerializeObject(data));
-                var Updaterecord = GetAccountBalance(up.AccountBalance);
+                var Updaterecord = GetAccountBalance(up.AccountNumber);
                 var AccountBalance = Updaterecord.AccountBalance - up.Withdrawal;
-                var response = UpdateAccountSheet(AccountBalance, Updaterecord.Id);
+                var response = UpdateAccountSheet(AccountBalance, Updaterecord.AccountNumber);
 
                 return response;
             }
@@ -47,7 +47,7 @@ namespace waficash.Services
                 sw.Write(JsonConvert.SerializeObject(data));
                 var Updaterecord = GetAccountBalance(up.AccountNumber);
                 var AccountBalance = Updaterecord.AccountBalance + up.Deposit;
-                var response = UpdateAccountSheet(AccountBalance, Updaterecord.Id);
+                var response = UpdateAccountSheet(AccountBalance, Updaterecord.AccountNumber);
 
                 return response;
 
@@ -64,12 +64,13 @@ namespace waficash.Services
             }
 
         }
-        public bool UpdateAccountSheet(decimal AccountBalance, long Id)
+        public bool UpdateAccountSheet(decimal AccountBalance, long AccountNumber)
         { 
             string json = File.ReadAllText("userData.json");
-            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-            jsonObj["User"][Id]["AccountBalance"] = AccountBalance;
-            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+            var jsonObj = JsonConvert.DeserializeObject<List<User>>(json);
+            var userRecord = jsonObj.Find(x => x.AccountNumber == AccountNumber);
+            userRecord.AccountBalance = AccountBalance;
+            string output = JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText("userData.json", output);
             return true;
         }

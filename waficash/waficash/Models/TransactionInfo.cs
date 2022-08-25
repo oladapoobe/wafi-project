@@ -8,7 +8,7 @@ namespace waficash.Models
     {
         public long Id { get; set; }
         public decimal Deposit { get; set; }
-        public long AccountBalance { get; set; }
+        public decimal AccountBalance { get; set; }
         public decimal Withdrawal { get; set; }
         public DateTime DateCreated { get; set; }
         public long AccountNumber { get; set; }

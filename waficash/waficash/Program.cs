@@ -19,7 +19,10 @@ namespace waficash
                 using (StreamReader r = new StreamReader("userData.json"))
                 {
                     string json = r.ReadToEnd();
-                    users = JsonConvert.DeserializeObject<List<User>>(json);
+                    if (json != "")
+                    {
+                        users = JsonConvert.DeserializeObject<List<User>>(json);
+                    }
                 }
             }
 
@@ -29,7 +32,10 @@ namespace waficash
                 using (StreamReader r = new StreamReader("transactionData.json"))
                 {
                     string json = r.ReadToEnd();
-                    transact = JsonConvert.DeserializeObject<List<TransactionInfo>>(json);
+                    if (json != "")
+                    {
+                        transact = JsonConvert.DeserializeObject<List<TransactionInfo>>(json);
+                    }
                 }
             }
 
@@ -37,8 +43,8 @@ namespace waficash
             /////////////// TEST CASE 1
             User data = new User();
             data.AccountBalance = 0;
-            data.AccountNumber = 234233433;
-            data.Name = "oladapo obgae";
+            data.AccountNumber = 23423343003;
+            data.Name = "oladapo obe";
             data.Currency = "$";
 
             var seerec = users.Find(x => x.AccountNumber == data.AccountNumber);
@@ -52,11 +58,11 @@ namespace waficash
 
             ///////////////////////////////////
             ///TEST CASE 2 
-            var resAcctNo =  AccountBalance(234233433);
+            var resAcctNo = AccountBalance(234233433);
             Console.WriteLine("Account already exist" + resAcctNo.AccountBalance);
             Console.ReadLine();
 
-            /// TEST CASE 3
+            ///// TEST CASE 3
             TransactionInfo data3 = new TransactionInfo();
             data3.AccountBalance = resAcctNo.AccountBalance;
             data3.AccountNumber = 234233433;
@@ -72,13 +78,13 @@ namespace waficash
             var resAcctNo2 = AccountBalance(234233433);
             Console.WriteLine("Account already exist" + resAcctNo2.AccountBalance);
             Console.ReadLine();
-           
+
             TransactionInfo data2 = new TransactionInfo();
-            data2.AccountBalance = resAcctNo.AccountBalance;
+            data2.AccountBalance = resAcctNo2.AccountBalance;
             data2.AccountNumber = 234233433;
             data2.Currency = "$";
             data2.DateCreated = DateTime.Now;
-            data2.Withdrawal = 400;
+            data2.Withdrawal = 200;
 
             transact.Add(data2);
             Withdrawal(transact, data2);
@@ -105,7 +111,7 @@ namespace waficash
         public static bool Deposit(List<TransactionInfo> data, TransactionInfo up)
         {
             TransactionService obj = new TransactionService();
-            var res = obj.Deposit(data,up);
+            var res = obj.Deposit(data, up);
             if (res == true)
             {
                 Console.WriteLine("Account Deposited sucessfully with " + up.Deposit);
