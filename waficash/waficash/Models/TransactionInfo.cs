@@ -12,7 +12,8 @@ namespace waficash.Models
         public decimal Withdrawal { get; set; }
         public DateTime DateCreated { get; set; }
         public long AccountNumber { get; set; }
-        
+        public string Currency { get; set; }
+
 
     }
 }

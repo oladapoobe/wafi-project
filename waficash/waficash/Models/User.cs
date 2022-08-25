@@ -10,5 +10,6 @@ namespace waficash.Models
         public string Name { get; set; }
         public long AccountBalance { get; set; }
         public long AccountNumber { get; set; }
+        public string Currency { get; set; }
     }
 }

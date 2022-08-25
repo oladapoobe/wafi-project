@@ -23,12 +23,23 @@ namespace waficash
                 }
             }
 
+            List<TransactionInfo> transact = new List<TransactionInfo>();
+            if (File.Exists("transactionData.json") == true)
+            {
+                using (StreamReader r = new StreamReader("transactionData.json"))
+                {
+                    string json = r.ReadToEnd();
+                    transact = JsonConvert.DeserializeObject<List<TransactionInfo>>(json);
+                }
+            }
 
-            /////////////// TEST CASE
+
+            /////////////// TEST CASE 1
             User data = new User();
             data.AccountBalance = 0;
             data.AccountNumber = 234233433;
             data.Name = "oladapo obgae";
+            data.Currency = "$";
 
             var seerec = users.Find(x => x.AccountNumber == data.AccountNumber);
             if (seerec == null)
@@ -38,9 +49,39 @@ namespace waficash
             }
             Console.WriteLine("Account already exist");
             Console.ReadLine();
-            ///////////////////////////////////
-            /// TEST CASE
 
+            ///////////////////////////////////
+            ///TEST CASE 2 
+            var resAcctNo =  AccountBalance(234233433);
+            Console.WriteLine("Account already exist" + resAcctNo.AccountBalance);
+            Console.ReadLine();
+
+            /// TEST CASE 3
+            TransactionInfo data3 = new TransactionInfo();
+            data3.AccountBalance = resAcctNo.AccountBalance;
+            data3.AccountNumber = 234233433;
+            data3.Currency = "$";
+            data3.DateCreated = DateTime.Now;
+            data3.Deposit = 400;
+
+            transact.Add(data3);
+            Deposit(transact, data3);
+
+
+            // TEST CASE 4
+            var resAcctNo2 = AccountBalance(234233433);
+            Console.WriteLine("Account already exist" + resAcctNo2.AccountBalance);
+            Console.ReadLine();
+           
+            TransactionInfo data2 = new TransactionInfo();
+            data2.AccountBalance = resAcctNo.AccountBalance;
+            data2.AccountNumber = 234233433;
+            data2.Currency = "$";
+            data2.DateCreated = DateTime.Now;
+            data2.Withdrawal = 400;
+
+            transact.Add(data2);
+            Withdrawal(transact, data2);
 
 
 
@@ -61,13 +102,13 @@ namespace waficash
 
         }
 
-        public static bool Deposit(TransactionInfo data)
+        public static bool Deposit(List<TransactionInfo> data, TransactionInfo up)
         {
             TransactionService obj = new TransactionService();
-            var res = obj.Deposit(data);
+            var res = obj.Deposit(data,up);
             if (res == true)
             {
-                Console.WriteLine("Account Deposited sucessfully with " + data.Deposit);
+                Console.WriteLine("Account Deposited sucessfully with " + up.Deposit);
                 Console.ReadLine();
                 return true;
             }
@@ -77,13 +118,13 @@ namespace waficash
 
         }
 
-        public static bool Withdrawal(TransactionInfo data)
+        public static bool Withdrawal(List<TransactionInfo> data, TransactionInfo up)
         {
             TransactionService obj = new TransactionService();
-            var res = obj.Withdrawal(data);
+            var res = obj.Withdrawal(data, up);
             if (res == true)
             {
-                Console.WriteLine("Account Withdrawal sucessfully with " + data.Withdrawal);
+                Console.WriteLine("Account Withdrawal sucessfully with " + up.Withdrawal);
                 Console.ReadLine();
                 return true;
             }

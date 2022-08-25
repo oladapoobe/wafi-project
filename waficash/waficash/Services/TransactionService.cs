@@ -28,25 +28,25 @@ namespace waficash.Services
             }
         }
 
-        public bool Withdrawal(TransactionInfo data)
+        public bool Withdrawal(List<TransactionInfo> data, TransactionInfo up)
         {
             using (StreamWriter sw = File.CreateText("transactionData.json"))
             {
                 sw.Write(JsonConvert.SerializeObject(data));
-                var Updaterecord = GetAccountBalance(data.AccountBalance);
-                var AccountBalance = Updaterecord.AccountBalance - data.Withdrawal;
+                var Updaterecord = GetAccountBalance(up.AccountBalance);
+                var AccountBalance = Updaterecord.AccountBalance - up.Withdrawal;
                 var response = UpdateAccountSheet(AccountBalance, Updaterecord.Id);
 
                 return response;
             }
         }
-        public bool Deposit(TransactionInfo data)
+        public bool Deposit(List<TransactionInfo> data, TransactionInfo up)
         {
             using (StreamWriter sw = File.CreateText("transactionData.json"))
             {
                 sw.Write(JsonConvert.SerializeObject(data));
-                var Updaterecord = GetAccountBalance(data.AccountNumber);
-                var AccountBalance = Updaterecord.AccountBalance + data.Deposit;
+                var Updaterecord = GetAccountBalance(up.AccountNumber);
+                var AccountBalance = Updaterecord.AccountBalance + up.Deposit;
                 var response = UpdateAccountSheet(AccountBalance, Updaterecord.Id);
 
                 return response;
