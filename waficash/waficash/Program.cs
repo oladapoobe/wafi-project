@@ -69,6 +69,7 @@ namespace waficash
             data3.Currency = "$";
             data3.DateCreated = DateTime.Now;
             data3.Deposit = 400;
+            data3.Tranfer = false;
 
             transact.Add(data3);
             Deposit(transact, data3);
@@ -85,9 +86,28 @@ namespace waficash
             data2.Currency = "$";
             data2.DateCreated = DateTime.Now;
             data2.Withdrawal = 200;
+            data2.Tranfer = false;
 
             transact.Add(data2);
             Withdrawal(transact, data2);
+
+
+            // TEST CASE 5
+            var resAcctNo4 = AccountBalance(234233433);
+            Console.WriteLine("Account already exist" + resAcctNo4.AccountBalance);
+            Console.ReadLine();
+
+            TransactionInfo data4 = new TransactionInfo();
+            data4.AccountBalance = resAcctNo4.AccountBalance;
+            data4.AccountNumber = 234233433;
+            data4.Currency = "$";
+            data4.DateCreated = DateTime.Now;
+            data4.Withdrawal = 100;
+            data4.Tranfer = true;
+            data4.TranferTo = 23423343003;
+
+            transact.Add(data4);
+            Transfer(transact, data4);
 
 
 
@@ -131,6 +151,30 @@ namespace waficash
             if (res == true)
             {
                 Console.WriteLine("Account Withdrawal sucessfully with " + up.Withdrawal);
+                Console.ReadLine();
+                return true;
+            }
+            Console.WriteLine("Account not debitted");
+            Console.ReadLine();
+            return false;
+
+        }
+
+        public static bool Transfer(List<TransactionInfo> data, TransactionInfo up)
+        {
+           
+
+
+            TransactionService obj = new TransactionService();
+            var res = obj.Withdrawal(data, up);
+            if (res == true)
+            {
+                Console.WriteLine("Account Withdrawal sucessfully with " + up.Withdrawal);
+                up.AccountNumber = up.TranferTo;
+                up.Deposit = up.Withdrawal;
+                var res2 = obj.Deposit(data, up);
+                Console.WriteLine("Account Creditted sucessfully with " + up.Withdrawal + "Transferred to " + up.TranferTo);
+
                 Console.ReadLine();
                 return true;
             }

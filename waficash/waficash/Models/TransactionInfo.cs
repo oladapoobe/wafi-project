@@ -13,7 +13,8 @@ namespace waficash.Models
         public DateTime DateCreated { get; set; }
         public long AccountNumber { get; set; }
         public string Currency { get; set; }
-
+        public bool Tranfer { get; set; }
+        public long TranferTo { get; set; }
 
     }
 }
