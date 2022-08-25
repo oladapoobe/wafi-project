@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ZILQM0OhL+gFY8Z57EIOhQpTKoRsCC9wlzO9hd6JES0R7lsD/QKAiqR1ZTeHr3AP2xe4pWvWLXYnDI/tx/9FAQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Gihon Records\\source\\repos\\wafi-project\\waficash\\waficash\\waficash.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Gihon Records\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
