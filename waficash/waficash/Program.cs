@@ -45,7 +45,8 @@ namespace waficash
             data.AccountBalance = 0;
             data.AccountNumber = 23423343003;
             data.Name = "oladapo obe";
-            data.Currency = "$";
+            data.Currency = "N";
+            data.Bvn = "000000111111";
 
             var seerec = users.Find(x => x.AccountNumber == data.AccountNumber);
             if (seerec == null)
@@ -58,56 +59,92 @@ namespace waficash
 
             ///////////////////////////////////
             ///TEST CASE 2 
-            var resAcctNo = AccountBalance(234233433);
-            Console.WriteLine("Account already exist" + resAcctNo.AccountBalance);
-            Console.ReadLine();
+            //var resAcctNo = AccountBalance(234233433);
+            //Console.WriteLine("Account already exist" + resAcctNo.AccountBalance);
+            //Console.ReadLine();
 
             ///// TEST CASE 3
-            TransactionInfo data3 = new TransactionInfo();
-            data3.AccountBalance = resAcctNo.AccountBalance;
-            data3.AccountNumber = 234233433;
-            data3.Currency = "$";
-            data3.DateCreated = DateTime.Now;
-            data3.Deposit = 400;
-            data3.Tranfer = false;
+            //TransactionInfo data3 = new TransactionInfo();
+            //data3.AccountBalance = resAcctNo.AccountBalance;
+            //data3.AccountNumber = 234233433;
+            //data3.Currency = "$";
+            //data3.DateCreated = DateTime.Now;
+            //data3.Deposit = 400;
+            //data3.Tranfer = false;
 
-            transact.Add(data3);
-            Deposit(transact, data3);
+            //transact.Add(data3);
+            //Deposit(transact, data3);
 
 
             // TEST CASE 4
-            var resAcctNo2 = AccountBalance(234233433);
-            Console.WriteLine("Account already exist" + resAcctNo2.AccountBalance);
-            Console.ReadLine();
+            //var resAcctNo2 = AccountBalance(234233433);
+            //Console.WriteLine("Account already exist" + resAcctNo2.AccountBalance);
+            //Console.ReadLine();
 
-            TransactionInfo data2 = new TransactionInfo();
-            data2.AccountBalance = resAcctNo2.AccountBalance;
-            data2.AccountNumber = 234233433;
-            data2.Currency = "$";
-            data2.DateCreated = DateTime.Now;
-            data2.Withdrawal = 200;
-            data2.Tranfer = false;
+            //TransactionInfo data2 = new TransactionInfo();
+            //data2.AccountBalance = resAcctNo2.AccountBalance;
+            //data2.AccountNumber = 234233433;
+            //data2.Currency = "$";
+            //data2.DateCreated = DateTime.Now;
+            //data2.Withdrawal = 200;
+            //data2.Tranfer = false;
 
-            transact.Add(data2);
-            Withdrawal(transact, data2);
+            //transact.Add(data2);
+            //Withdrawal(transact, data2);
 
 
             // TEST CASE 5
-            var resAcctNo4 = AccountBalance(234233433);
-            Console.WriteLine("Account already exist" + resAcctNo4.AccountBalance);
-            Console.ReadLine();
+            //var resAcctNo4 = AccountBalance(234233433);
+            //Console.WriteLine("Account already exist" + resAcctNo4.AccountBalance);
+            //Console.ReadLine();
 
+            //TransactionInfo data4 = new TransactionInfo();
+            //data4.AccountBalance = resAcctNo4.AccountBalance;
+            //data4.AccountNumber = 234233433;
+            //data4.Currency = "$";
+            //data4.DateCreated = DateTime.Now;
+            //data4.Withdrawal = 100;
+            //data4.Tranfer = true;
+            //data4.TranferTo = 23423343003;
+
+            //transact.Add(data4);
+            //Transfer(transact, data4);
+
+
+            //        Market rates = { "USD": 1, "NGN" : 415, GBP: 0.86, "YUAN" : 6.89}
+            //    Ayobami Soetan12:28 PM
+            //    UserA has {"USD":"2", "NGN":450, "GBP" : 1}
+            //UserA needs to send $4 to userB
+
+
+            //provision of account number to be check to get bvn
+            var resAcctNo4 = AccountBalance(234233433);
+
+            //begin transaction
             TransactionInfo data4 = new TransactionInfo();
-            data4.AccountBalance = resAcctNo4.AccountBalance;
-            data4.AccountNumber = 234233433;
-            data4.Currency = "$";
             data4.DateCreated = DateTime.Now;
-            data4.Withdrawal = 100;
+            data4.Withdrawal = 4;
             data4.Tranfer = true;
             data4.TranferTo = 23423343003;
 
-            transact.Add(data4);
-            Transfer(transact, data4);
+            var relt = ChecksAssetAccountwithSufficientBalance(data4.Withdrawal, resAcctNo4.Bvn);
+            if (relt != null)
+            {
+                data4.Currency = relt.Currency;
+                data4.AccountBalance = relt.AccountBalance;
+                data4.AccountNumber = relt.AccountNumber;
+                transact.Add(data4);
+
+                Transfer(transact, data4);
+            }
+            else
+            {
+                Console.WriteLine("Insufficient Amount in your accounts");
+                Console.ReadLine();
+            }
+
+
+
 
 
 
@@ -162,8 +199,6 @@ namespace waficash
 
         public static bool Transfer(List<TransactionInfo> data, TransactionInfo up)
         {
-           
-
 
             TransactionService obj = new TransactionService();
             var res = obj.Withdrawal(data, up);
@@ -194,6 +229,112 @@ namespace waficash
             return res;
 
 
+
+        }
+
+        public static User getUserAccounts(long accountnumber, string currency)
+        {
+            List<User> users = new List<User>();
+            if (File.Exists("userData.json") == true)
+            {
+                using (StreamReader r = new StreamReader("userData.json"))
+                {
+                    string json = r.ReadToEnd();
+                    if (json != "")
+                    {
+                        users = JsonConvert.DeserializeObject<List<User>>(json);
+                    }
+                }
+            }
+
+            return users.Find(x => x.AccountNumber == accountnumber && x.Currency == currency);
+        }
+
+        public static bool ChecksInSufficientAccount(long accountnumber, string currency, decimal ammount)
+        {
+            List<User> users = new List<User>();
+            if (File.Exists("userData.json") == true)
+            {
+                using (StreamReader r = new StreamReader("userData.json"))
+                {
+                    string json = r.ReadToEnd();
+                    if (json != "")
+                    {
+                        users = JsonConvert.DeserializeObject<List<User>>(json);
+                    }
+                }
+            }
+
+            var record = users.Find(x => x.AccountNumber == accountnumber && x.Currency == currency && x.AccountBalance >= ammount);
+            if (record == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static User ChecksAssetAccountwithSufficientBalance(decimal ammount, string bvn)
+        {
+            List<User> users = new List<User>();
+            if (File.Exists("userData.json") == true)
+            {
+                using (StreamReader r = new StreamReader("userData.json"))
+                {
+                    string json = r.ReadToEnd();
+                    if (json != "")
+                    {
+                        users = JsonConvert.DeserializeObject<List<User>>(json);
+                    }
+                }
+            }
+
+            var currency = new List<Currency>()
+            {
+              new Currency(){ Symbol="USD", Value = 1},
+              new Currency(){ Symbol="GBP", Value = 0.86},
+              new Currency(){ Symbol="YUAN", Value = 6.89},
+              new Currency(){ Symbol="NGN", Value = 415}
+            };
+
+            foreach (var curr in currency)
+            {
+                var ConvertedAmount = CurrencyConversion(ammount, curr.Symbol);
+                var record = users.Find(x => x.Bvn == bvn && x.Currency == curr.Symbol && x.AccountBalance >= ConvertedAmount);
+
+
+                if (record != null)
+                {
+                    return record;
+                }
+
+
+            }
+            return new User();
+
+        }
+
+        public static decimal CurrencyConversion(decimal ammount, string currency)
+        {
+
+
+            if (currency == "USD")
+            {
+                return ammount * 1;
+            }
+            if (currency == "GBP")
+            {
+                return ammount * (decimal)0.86;
+            }
+            if (currency == "YUAN")
+            {
+                return ammount * (decimal)6.89;
+            }
+            if (currency == "NGN")
+            {
+                return ammount * (decimal)415;
+            }
+
+            return 0;
 
         }
     }
