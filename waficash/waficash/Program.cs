@@ -120,16 +120,21 @@ namespace waficash
             //provision of account number to be check to get bvn
             var resAcctNo4 = AccountBalance(234233433);
 
-            //begin transaction
+            //begin transaction for usd currency
             TransactionInfo data4 = new TransactionInfo();
             data4.DateCreated = DateTime.Now;
             data4.Withdrawal = 4;
             data4.Tranfer = true;
             data4.TranferTo = 23423343003;
+            data4.Currency = "USD";
+            data4.AccountNumber = 234233433;
 
-            var relt = ChecksAssetAccountwithSufficientBalance(data4.Withdrawal, resAcctNo4.Bvn);
+            var relt = ChecksAssetAccountwithSufficientBalance(data4.Withdrawal, resAcctNo4.Bvn, data4.Currency, data4.AccountNumber);
             if (relt != null)
             {
+
+                var ConvertedAmount = CurrencyConversion(data4.Withdrawal, relt.Currency);
+
                 data4.Currency = relt.Currency;
                 data4.AccountBalance = relt.AccountBalance;
                 data4.AccountNumber = relt.AccountNumber;
@@ -273,7 +278,7 @@ namespace waficash
             return true;
         }
 
-        public static User ChecksAssetAccountwithSufficientBalance(decimal ammount, string bvn)
+        public static User ChecksAssetAccountwithSufficientBalance(decimal ammount, string bvn, string currencyVal, long accountnumber) 
         {
             List<User> users = new List<User>();
             if (File.Exists("userData.json") == true)
@@ -296,20 +301,33 @@ namespace waficash
               new Currency(){ Symbol="NGN", Value = 415}
             };
 
-            foreach (var curr in currency)
+
+
+            var record = users.Find(x => x.Bvn == bvn && x.Currency == currencyVal && x.AccountBalance >= ammount && x.AccountNumber == accountnumber);
+
+            if (record == null)
             {
-                var ConvertedAmount = CurrencyConversion(ammount, curr.Symbol);
-                var record = users.Find(x => x.Bvn == bvn && x.Currency == curr.Symbol && x.AccountBalance >= ConvertedAmount);
 
-
-                if (record != null)
+                foreach (var curr in currency)
                 {
-                    return record;
+                    if (curr.Symbol != currencyVal)
+                    {
+                        var ConvertedAmount = CurrencyConversion(ammount, curr.Symbol);
+                        record = users.Find(x => x.Bvn == bvn && x.Currency == curr.Symbol && x.AccountBalance >= ConvertedAmount);
+
+
+                        if (record != null)
+                        {
+                            return record;
+                        }
+
+                    }
+
                 }
-
-
             }
-            return new User();
+            
+
+            return record;
 
         }
 

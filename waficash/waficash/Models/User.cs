@@ -12,5 +12,6 @@ namespace waficash.Models
         public long AccountNumber { get; set; }
         public string Currency { get; set; }
         public string Bvn { get; set; }
+        public decimal holdfunds { get; set; }
     }
 }
